@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'PokemonDetailPage.dart';
 
 /// Data Model
 class SavedTeam {
@@ -269,7 +270,7 @@ class _PlayerselectionState extends State<Playerselection> {
             children: [
               // selected bar
               Container(
-                height: 220,
+                height: 240,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Obx(
@@ -310,20 +311,29 @@ class _PlayerselectionState extends State<Playerselection> {
                                           children: [
                                             ReorderableDragStartListener(
                                               index: i,
-                                              child: Stack(
-                                                children: [
-                                                  Hero(
-                                                    tag:
-                                                        'poke-$_teamNameForHero-$name',
-                                                    child: ClipRRect(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                      child: img == null
+                                              child: GestureDetector(  // เพิ่ม GestureDetector ครอบ Stack
+                                                onTap: () {
+                                                  // เมื่อคลิกจะไปหน้าใหม่
+                                                  Get.to(() => PokemonDetailPage(pokemonName: name));
+                                                  
+                                                  // หรือถ้าต้องการส่งข้อมูลไปด้วย
+                                                  // Get.to(() => PokemonDetailPage(), arguments: {
+                                                  //   'name': name,
+                                                  //   'image': img,
+                                                  //   'teamName': c.teamName.value
+                                                  // });
+                                                },
+                                                child: Stack(
+                                                  children: [
+                                                    Hero(
+                                                      tag: 'poke-$_teamNameForHero-$name',
+                                                      child: ClipRRect(
+                                                        borderRadius: BorderRadius.circular(12),
+                                                        child: img == null 
                                                           ? const SizedBox(
-                                                              width: 260,
+                                                              width: 260, 
                                                               height: 150,
-                                                              child: Center(
-                                                                child: CircularProgressIndicator(),
-                                                              ),
+                                                              child: Center(child: CircularProgressIndicator()),
                                                             )
                                                           : Image.network(
                                                               img,
@@ -331,28 +341,29 @@ class _PlayerselectionState extends State<Playerselection> {
                                                               height: 150,
                                                               fit: BoxFit.contain,
                                                             ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  Positioned(
-                                                    top: 6,
-                                                    right: 6,
-                                                    child: InkWell(
-                                                      onTap: () => c.toggle(name),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.all(4),
-                                                        decoration: const BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: Colors.black54,
-                                                        ),
-                                                        child: const Icon(
-                                                          Icons.close,
-                                                          size: 16,
-                                                          color: Colors.white,
+                                                    Positioned(
+                                                      top: 6,
+                                                      right: 6,
+                                                      child: InkWell(
+                                                        onTap: () => c.toggle(name), // ปุ่ม X ยังคงทำงานเหมือนเดิม
+                                                        child: Container(
+                                                          padding: const EdgeInsets.all(4),
+                                                          decoration: const BoxDecoration(
+                                                            shape: BoxShape.circle,
+                                                            color: Colors.black54,
+                                                          ),
+                                                          child: const Icon(
+                                                            Icons.close,
+                                                            size: 16,
+                                                            color: Colors.white,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(height: 8),
@@ -361,6 +372,22 @@ class _PlayerselectionState extends State<Playerselection> {
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
+                                                const SizedBox(height: 4),
+                                            Text("CP ${1000 + i * 200}",  // ตัวอย่าง mock CP
+                                                style: const TextStyle(fontSize: 12, color: Colors.black54)),
+
+                                            const SizedBox(height: 4),
+                                            SizedBox(
+                                              width: 200,
+                                              child: LinearProgressIndicator(
+                                                value: 0.6, // mock ค่า 60% HP
+                                                backgroundColor: Colors.red.shade100,
+                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text("HP 90/150", // mock ค่า HP
+                                                style: const TextStyle(fontSize: 12, color: Colors.black54)),
                                           ],
                                         ),
                                       );
@@ -386,7 +413,7 @@ class _PlayerselectionState extends State<Playerselection> {
                     ElevatedButton.icon(
                       onPressed: _saveAndClose,
                       icon: const Icon(Icons.check),
-                      label: const Text('Create Team'),
+                      label: const Text('Save Team'),
                     ),
                     const SizedBox(width: 8),
                     const Spacer(),
